@@ -1,0 +1,702 @@
+[
+    {
+        "id": "9867ec50.8fb63",
+        "type": "tab",
+        "label": "Rollladen",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "a188d861.d2f368",
+        "type": "mqtt out",
+        "z": "9867ec50.8fb63",
+        "name": "Shelly 2.5 Wz Rol MQTT",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "broker": "2524e453.daefac",
+        "x": 990,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "a9280dc5.c54e4",
+        "type": "debug",
+        "z": "9867ec50.8fb63",
+        "name": "Button-commands Wz Rol",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 990,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "7a2062e5.87460c",
+        "type": "ui_button",
+        "z": "9867ec50.8fb63",
+        "name": "Open",
+        "group": "7b25658d.5140dc",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "label": "⇧ Auf ⇧",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "open",
+        "payloadType": "str",
+        "topic": "shellies/shellyswitch25-688C76/roller/0/command",
+        "x": 630,
+        "y": 400,
+        "wires": [
+            [
+                "a188d861.d2f368",
+                "a9280dc5.c54e4",
+                "dcd525c9.a5b498"
+            ]
+        ]
+    },
+    {
+        "id": "f4dbac4f.b27a3",
+        "type": "ui_button",
+        "z": "9867ec50.8fb63",
+        "name": "Close",
+        "group": "7b25658d.5140dc",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "label": "⇩ Zu ⇩",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "close",
+        "payloadType": "str",
+        "topic": "shellies/shellyswitch25-688C76/roller/0/command",
+        "x": 630,
+        "y": 600,
+        "wires": [
+            [
+                "a188d861.d2f368",
+                "a9280dc5.c54e4",
+                "dcd525c9.a5b498"
+            ]
+        ]
+    },
+    {
+        "id": "12931f39.be9a81",
+        "type": "ui_button",
+        "z": "9867ec50.8fb63",
+        "name": "Stop",
+        "group": "7b25658d.5140dc",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "label": "Stop",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "stop",
+        "payloadType": "str",
+        "topic": "shellies/shellyswitch25-688C76/roller/0/command",
+        "x": 630,
+        "y": 480,
+        "wires": [
+            [
+                "a188d861.d2f368",
+                "a9280dc5.c54e4",
+                "dcd525c9.a5b498"
+            ]
+        ]
+    },
+    {
+        "id": "dbad0a7b.efe748",
+        "type": "sun events",
+        "z": "9867ec50.8fb63",
+        "testmode": false,
+        "verbose": true,
+        "topic": "sunevents",
+        "name": "",
+        "x": 100,
+        "y": 40,
+        "wires": [
+            [
+                "98686d26.bc508",
+                "b918d9be.5f9338",
+                "bdb9b6e9.51d448"
+            ]
+        ]
+    },
+    {
+        "id": "bdb9b6e9.51d448",
+        "type": "function",
+        "z": "9867ec50.8fb63",
+        "name": "evening twilight starts",
+        "func": "if ( \"sunsetStart\" === msg.payload || \"sunset\" === msg.payload) {\n    return msg;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 220,
+        "y": 220,
+        "wires": [
+            [
+                "8959565a.b2ad68"
+            ]
+        ]
+    },
+    {
+        "id": "b918d9be.5f9338",
+        "type": "function",
+        "z": "9867ec50.8fb63",
+        "name": "morning twilight ends",
+        "func": "if (\"dawn\" === msg.payload) {\n    return msg;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 220,
+        "y": 80,
+        "wires": [
+            [
+                "b25aed6e.44a59"
+            ]
+        ]
+    },
+    {
+        "id": "b25aed6e.44a59",
+        "type": "function",
+        "z": "9867ec50.8fb63",
+        "name": "not before 08:00 (09:00 on weekend)",
+        "func": "var dt = msg.datetime;\nif((0 === dt.getDay || 6 === dt.getDay) && 8 <= dt.getHours){ // weekend\n    return msg;\n}\nelse if((dt.getDay > 0 && dt.getDay < 6) && 9 <= dt.getHours){ // work day\n    return msg;    \n} else {\n  //nothing, stop here    \n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 490,
+        "y": 80,
+        "wires": [
+            [
+                "341d7c22.627fb4"
+            ]
+        ]
+    },
+    {
+        "id": "98686d26.bc508",
+        "type": "debug",
+        "z": "9867ec50.8fb63",
+        "name": "sun events",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 950,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "c25f99d1.17b9a8",
+        "type": "inject",
+        "z": "9867ec50.8fb63",
+        "name": "work day morning",
+        "repeat": "",
+        "crontab": "00 08 * * 1,2,3,4,5",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "morning",
+        "payload": "workday morning up",
+        "payloadType": "str",
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "341d7c22.627fb4"
+            ]
+        ]
+    },
+    {
+        "id": "f97b8d46.9f2da",
+        "type": "inject",
+        "z": "9867ec50.8fb63",
+        "name": "weekend morning",
+        "repeat": "",
+        "crontab": "00 09 * * 6,0",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "morning",
+        "payload": "weekend morning up",
+        "payloadType": "str",
+        "x": 170,
+        "y": 120,
+        "wires": [
+            [
+                "341d7c22.627fb4"
+            ]
+        ]
+    },
+    {
+        "id": "2efa2e2c.8d53f2",
+        "type": "ui_button",
+        "z": "9867ec50.8fb63",
+        "name": "Snooze",
+        "group": "7b25658d.5140dc",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "label": "Schlummer",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "30",
+        "payloadType": "num",
+        "topic": "shellies/shellyswitch25-688C76/roller/0/command/pos",
+        "x": 640,
+        "y": 520,
+        "wires": [
+            [
+                "a188d861.d2f368",
+                "a9280dc5.c54e4",
+                "dcd525c9.a5b498"
+            ]
+        ]
+    },
+    {
+        "id": "6ca61776.e31988",
+        "type": "delay",
+        "z": "9867ec50.8fb63",
+        "name": "random delay up to some minutes",
+        "pauseType": "random",
+        "timeout": "1",
+        "timeoutUnits": "minutes",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "0",
+        "randomLast": "5",
+        "randomUnits": "minutes",
+        "drop": false,
+        "x": 260,
+        "y": 400,
+        "wires": [
+            [
+                "f7e63992.9b4518",
+                "a1e397f5.685b78"
+            ]
+        ]
+    },
+    {
+        "id": "7b517872.9f6eb8",
+        "type": "delay",
+        "z": "9867ec50.8fb63",
+        "name": "random delay up to some minutes",
+        "pauseType": "random",
+        "timeout": "1",
+        "timeoutUnits": "minutes",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "0",
+        "randomLast": "5",
+        "randomUnits": "minutes",
+        "drop": false,
+        "x": 260,
+        "y": 600,
+        "wires": [
+            [
+                "f4dbac4f.b27a3"
+            ]
+        ]
+    },
+    {
+        "id": "235bcc6a.35f544",
+        "type": "ui_gauge",
+        "z": "9867ec50.8fb63",
+        "name": "Gauge",
+        "group": "7b25658d.5140dc",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "",
+        "label": "zu    <  -  >    auf",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#000000",
+            "#76a5a5",
+            "#ccfafd"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 630,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "78decc0.075b634",
+        "type": "mqtt in",
+        "z": "9867ec50.8fb63",
+        "name": "Shelly 2.5 Wz Rol Pos",
+        "topic": "shellies/shellyswitch25-688C76/roller/0/pos",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "2524e453.daefac",
+        "x": 140,
+        "y": 640,
+        "wires": [
+            [
+                "dead138e.4f4b"
+            ]
+        ]
+    },
+    {
+        "id": "341d7c22.627fb4",
+        "type": "function",
+        "z": "9867ec50.8fb63",
+        "name": "morning up",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 650,
+        "y": 140,
+        "wires": [
+            [
+                "6ca61776.e31988",
+                "38d44294.4059ee"
+            ]
+        ]
+    },
+    {
+        "id": "3d628a1e.a6a3f6",
+        "type": "function",
+        "z": "9867ec50.8fb63",
+        "name": "evening down",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 660,
+        "y": 220,
+        "wires": [
+            [
+                "7b517872.9f6eb8",
+                "38d44294.4059ee"
+            ]
+        ]
+    },
+    {
+        "id": "99258d21.1bd9c",
+        "type": "comment",
+        "z": "9867ec50.8fb63",
+        "name": "Wohnzimmer Rolllade Wz Rol",
+        "info": "",
+        "x": 160,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "8959565a.b2ad68",
+        "type": "delay",
+        "z": "9867ec50.8fb63",
+        "name": "delay 15 Min",
+        "pauseType": "delay",
+        "timeout": "15",
+        "timeoutUnits": "minutes",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 410,
+        "y": 220,
+        "wires": [
+            [
+                "3d628a1e.a6a3f6"
+            ]
+        ]
+    },
+    {
+        "id": "77131ccf.688c34",
+        "type": "mqtt in",
+        "z": "9867ec50.8fb63",
+        "name": "Shelly 2.5 all",
+        "topic": "shellies/shellyswitch25-688C76/roller/0/#",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "2524e453.daefac",
+        "x": 110,
+        "y": 760,
+        "wires": [
+            [
+                "67bf1f1.5d0cbe"
+            ]
+        ]
+    },
+    {
+        "id": "67bf1f1.5d0cbe",
+        "type": "debug",
+        "z": "9867ec50.8fb63",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 950,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "38d44294.4059ee",
+        "type": "debug",
+        "z": "9867ec50.8fb63",
+        "name": "time triggers",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 950,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "f7e63992.9b4518",
+        "type": "delay",
+        "z": "9867ec50.8fb63",
+        "name": "delay 1 h",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "hours",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 480,
+        "y": 400,
+        "wires": [
+            [
+                "3a1d44ee.63d05c"
+            ]
+        ]
+    },
+    {
+        "id": "ff033060.63565",
+        "type": "mqtt in",
+        "z": "9867ec50.8fb63",
+        "name": "",
+        "topic": "/home/#",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "2524e453.daefac",
+        "x": 100,
+        "y": 820,
+        "wires": [
+            [
+                "915e3d33.e502d"
+            ]
+        ]
+    },
+    {
+        "id": "915e3d33.e502d",
+        "type": "debug",
+        "z": "9867ec50.8fb63",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 950,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "8e8937c2.1991f8",
+        "type": "mqtt out",
+        "z": "9867ec50.8fb63",
+        "name": "",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "broker": "2524e453.daefac",
+        "x": 930,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "2b3c506a.ab6e5",
+        "type": "inject",
+        "z": "9867ec50.8fb63",
+        "name": "An",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "/home/data",
+        "payload": "on",
+        "payloadType": "str",
+        "x": 290,
+        "y": 880,
+        "wires": [
+            [
+                "8e8937c2.1991f8",
+                "915e3d33.e502d"
+            ]
+        ]
+    },
+    {
+        "id": "dead138e.4f4b",
+        "type": "function",
+        "z": "9867ec50.8fb63",
+        "name": "Set WzRolPos",
+        "func": "global.set('wzRol1Pos', msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 340,
+        "y": 640,
+        "wires": [
+            [
+                "235bcc6a.35f544"
+            ]
+        ]
+    },
+    {
+        "id": "a1e397f5.685b78",
+        "type": "function",
+        "z": "9867ec50.8fb63",
+        "name": "snooze if not already open",
+        "func": "var wzRol1Pos = global.get('wzRol1Pos') || 0;\nif(wzRol1Pos <= 30){\n    msg.payload = '30'\n} else {\n    msg.payload = wzRol1Pos\n}\nmsg.topic=\"shellies/shellyswitch25-688C76/roller/0/command/pos\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 700,
+        "y": 560,
+        "wires": [
+            [
+                "a9280dc5.c54e4",
+                "a188d861.d2f368"
+            ]
+        ]
+    },
+    {
+        "id": "b7d6620a.526d8",
+        "type": "comment",
+        "z": "9867ec50.8fb63",
+        "name": "Test mit anderem Shelly ",
+        "info": "",
+        "x": 140,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "3a1d44ee.63d05c",
+        "type": "function",
+        "z": "9867ec50.8fb63",
+        "name": "open if not touched ???",
+        "func": "msg.payload = \"open\";\nmsg.topic=\"shellies/shellyswitch25-688C76/roller/0/command\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 690,
+        "y": 440,
+        "wires": [
+            [
+                "a9280dc5.c54e4",
+                "a188d861.d2f368"
+            ]
+        ]
+    },
+    {
+        "id": "dcd525c9.a5b498",
+        "type": "function",
+        "z": "9867ec50.8fb63",
+        "name": "set last touch",
+        "func": "global.set('wzRol1LastTouch', new Date().toLocaleString());\nmsg.time = global.get('wzRol1LastTouch');\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 950,
+        "y": 460,
+        "wires": [
+            [
+                "e6794f7d.2bc28"
+            ]
+        ]
+    },
+    {
+        "id": "e6794f7d.2bc28",
+        "type": "debug",
+        "z": "9867ec50.8fb63",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "time",
+        "targetType": "msg",
+        "x": 1240,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "a4e34c5d.1a2d7",
+        "type": "comment",
+        "z": "9867ec50.8fb63",
+        "name": "Coordinates Münster",
+        "info": "Lattitude = 51.961563\nLongitude = 7.628202",
+        "x": 270,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "2524e453.daefac",
+        "type": "mqtt-broker",
+        "name": "mosquitto local",
+        "broker": "127.0.0.1",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "7b25658d.5140dc",
+        "type": "ui_group",
+        "name": "Wohnzimmer",
+        "tab": "ea17cb68.42b388",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": true
+    },
+    {
+        "id": "ea17cb68.42b388",
+        "type": "ui_tab",
+        "name": "Smart Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
